@@ -27,9 +27,21 @@ def extract_invoice_number(text):
 
     return None
 
+def extract_invoice_date(text):
+    pattern = r"Invoice Date\s+([A-Za-z]+\s+\d{1,2},\s+\d{4})"
+
+    match = re.search(pattern, text, re.IGNORECASE)
+
+    if match:
+        return match.group(1)
+
+    return None
+
 
 text = extract_text_from_pdf(PDF_PATH)
 
 invoice_number = extract_invoice_number(text)
+invoice_date = extract_invoice_date(text)
 
 print("Invoice Number:", invoice_number)
+print("Invoice Date:", invoice_date)
