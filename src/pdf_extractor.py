@@ -1,5 +1,7 @@
 import pdfplumber
 import re
+from decimal import Decimal
+
 
 
 
@@ -65,7 +67,7 @@ def extract_amount(text, label):
     match = re.search(pattern, text, re.IGNORECASE | re.MULTILINE)
 
     if match:
-        return match.group(1)
+        return Decimal(match.group(1).replace(",", ""))
 
     return None
 
