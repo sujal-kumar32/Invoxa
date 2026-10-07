@@ -20,16 +20,20 @@ def process_invoices():
     for pdf_file in invoice_files:
         print("Processing:", pdf_file.name)
 
-        invoice = extract_invoice(pdf_file)
+        try:
+            invoice = extract_invoice(pdf_file)
 
-        missing_fields = validate_invoice(invoice)
+            missing_fields = validate_invoice(invoice)
 
-        if missing_fields:
-            print("  Missing:", ", ".join(missing_fields))
-        else:
-            print("  Valid invoice")
+            if missing_fields:
+                print("  Missing:", ", ".join(missing_fields))
+            else:
+                print("  Valid invoice")
 
-        invoices.append(invoice)
+            invoices.append(invoice)
+
+        except Exception as error:
+            print("  Error:", error)
 
     return invoices
 
