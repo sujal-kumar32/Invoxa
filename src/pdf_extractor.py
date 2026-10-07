@@ -1,6 +1,7 @@
 import pdfplumber
 import re
 from decimal import Decimal
+from excel_exporter import export_invoice_to_excel
 
 
 
@@ -105,4 +106,8 @@ invoice = {
     "Total": total
 }
 
-print(invoice)
+output_path = "output/invoice_report.xlsx"
+
+export_invoice_to_excel(invoice, output_path)
+
+print("Excel report created:", output_path)
