@@ -1,6 +1,8 @@
 import pdfplumber
 import re
 
+
+
 PDF_PATH = "input/sample_invoice.pdf"
 
 
@@ -57,6 +59,16 @@ def extract_customer(text):
 
     return None
 
+def extract_amount(text, label):
+    pattern = rf"^{label}\s+\$?([\d,]+\.\d{{2}})$"
+
+    match = re.search(pattern, text, re.IGNORECASE | re.MULTILINE)
+
+    if match:
+        return match.group(1)
+
+    return None
+
 
 text = extract_text_from_pdf(PDF_PATH)
 
@@ -65,7 +77,14 @@ invoice_date = extract_invoice_date(text)
 vendor = extract_vendor(text)
 customer = extract_customer(text)
 
+subtotal = extract_amount(text, "Sub Total")
+tax = extract_amount(text, "Tax")
+total = extract_amount(text, "Total")
+
 print("Invoice Number:", invoice_number)
 print("Invoice Date:", invoice_date)
 print("Vendor:", vendor)
 print("Customer:", customer)
+print("Subtotal:", subtotal)
+print("Tax:", tax)
+print("Total:", total)
