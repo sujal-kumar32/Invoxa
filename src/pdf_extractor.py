@@ -47,13 +47,25 @@ def extract_vendor(text):
 
     return None
 
+def extract_customer(text):
+    pattern = r"To:\s*\n([^\n]+)"
+
+    match = re.search(pattern, text, re.IGNORECASE)
+
+    if match:
+        return match.group(1).strip()
+
+    return None
+
 
 text = extract_text_from_pdf(PDF_PATH)
 
 invoice_number = extract_invoice_number(text)
 invoice_date = extract_invoice_date(text)
 vendor = extract_vendor(text)
+customer = extract_customer(text)
 
 print("Invoice Number:", invoice_number)
 print("Invoice Date:", invoice_date)
 print("Vendor:", vendor)
+print("Customer:", customer)
