@@ -1,12 +1,12 @@
 import pdfplumber
 import re
 from decimal import Decimal
-from excel_exporter import export_invoice_to_excel
 
 
 
 
-PDF_PATH = "input/sample_invoice.pdf"
+
+
 
 
 def extract_text_from_pdf(pdf_path):
@@ -82,32 +82,32 @@ def extract_gstin(text):
 
     return None
 
+def extract_invoice(pdf_path):
+    text = extract_text_from_pdf(pdf_path)
 
-text = extract_text_from_pdf(PDF_PATH)
+    invoice_number = extract_invoice_number(text)
+    invoice_date = extract_invoice_date(text)
+    vendor = extract_vendor(text)
+    customer = extract_customer(text)
+    gstin = extract_gstin(text)
 
-invoice_number = extract_invoice_number(text)
-invoice_date = extract_invoice_date(text)
-vendor = extract_vendor(text)
-customer = extract_customer(text)
-gstin = extract_gstin(text)
+    subtotal = extract_amount(text, "Sub Total")
+    tax = extract_amount(text, "Tax")
+    total = extract_amount(text, "Total")
 
-subtotal = extract_amount(text, "Sub Total")
-tax = extract_amount(text, "Tax")
-total = extract_amount(text, "Total")
+    invoice = {
+        "Invoice Number": invoice_number,
+        "Invoice Date": invoice_date,
+        "Vendor": vendor,
+        "Customer": customer,
+        "GSTIN": gstin,
+        "Subtotal": subtotal,
+        "Tax": tax,
+        "Total": total
+    }
 
-invoice = {
-    "Invoice Number": invoice_number,
-    "Invoice Date": invoice_date,
-    "Vendor": vendor,
-    "Customer": customer,
-    "GSTIN": gstin,
-    "Subtotal": subtotal,
-    "Tax": tax,
-    "Total": total
-}
+    return invoice
 
-output_path = "output/invoice_report.xlsx"
 
-export_invoice_to_excel(invoice, output_path)
 
-print("Excel report created:", output_path)
+
