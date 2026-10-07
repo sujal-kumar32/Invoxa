@@ -1,8 +1,9 @@
 from pathlib import Path
-import pandas as pd
+
 
 from pdf_extractor import extract_invoice
 from validator import validate_invoice
+from excel_exporter import export_invoices_to_excel
 
 
 INPUT_FOLDER = Path("input")
@@ -49,7 +50,7 @@ def export_to_excel(invoices):
 
 invoices = process_invoices()
 
-export_to_excel(invoices)
+export_invoices_to_excel(invoices, OUTPUT_PATH)
 
 print(f"Processed {len(invoices)} invoice(s).")
 print("Excel report created:", OUTPUT_PATH)
