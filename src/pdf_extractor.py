@@ -69,6 +69,16 @@ def extract_amount(text, label):
 
     return None
 
+def extract_gstin(text):
+    pattern = r"\b\d{2}[A-Z]{5}\d{4}[A-Z][A-Z0-9]Z[A-Z0-9]\b"
+
+    match = re.search(pattern, text)
+
+    if match:
+        return match.group(0)
+
+    return None
+
 
 text = extract_text_from_pdf(PDF_PATH)
 
@@ -76,10 +86,12 @@ invoice_number = extract_invoice_number(text)
 invoice_date = extract_invoice_date(text)
 vendor = extract_vendor(text)
 customer = extract_customer(text)
+gstin = extract_gstin(text)
 
 subtotal = extract_amount(text, "Sub Total")
 tax = extract_amount(text, "Tax")
 total = extract_amount(text, "Total")
+
 
 print("Invoice Number:", invoice_number)
 print("Invoice Date:", invoice_date)
@@ -88,3 +100,4 @@ print("Customer:", customer)
 print("Subtotal:", subtotal)
 print("Tax:", tax)
 print("Total:", total)
+print("GSTIN:", gstin)
