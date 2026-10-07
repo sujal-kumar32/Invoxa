@@ -2,6 +2,7 @@ from pathlib import Path
 import pandas as pd
 
 from pdf_extractor import extract_invoice
+from validator import validate_invoice
 
 
 INPUT_FOLDER = Path("input")
@@ -20,6 +21,14 @@ def process_invoices():
         print("Processing:", pdf_file.name)
 
         invoice = extract_invoice(pdf_file)
+
+        missing_fields = validate_invoice(invoice)
+
+        if missing_fields:
+            print("  Missing:", ", ".join(missing_fields))
+        else:
+            print("  Valid invoice")
+
         invoices.append(invoice)
 
     return invoices
