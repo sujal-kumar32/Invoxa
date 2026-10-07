@@ -87,15 +87,15 @@ def extract_customer(pdf_path):
 
 def extract_amount(text, label):
     patterns = [
-        rf"{label}\s*:\s*\$?([\d,]+\.\d{{2}})",
-        rf"{label}\s+\$?([\d,]+\.\d{{2}})"
+        rf"^\s*{re.escape(label)}\s*:\s*\$?([\d,]+\.\d{{2}})\s*$",
+        rf"^\s*{re.escape(label)}\s+\$?([\d,]+\.\d{{2}})\s*$"
     ]
 
     for pattern in patterns:
         match = re.search(
             pattern,
             text,
-            re.IGNORECASE
+            re.IGNORECASE | re.MULTILINE
         )
 
         if match:
