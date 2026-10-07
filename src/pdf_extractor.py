@@ -92,12 +92,15 @@ subtotal = extract_amount(text, "Sub Total")
 tax = extract_amount(text, "Tax")
 total = extract_amount(text, "Total")
 
+invoice = {
+    "Invoice Number": invoice_number,
+    "Invoice Date": invoice_date,
+    "Vendor": vendor,
+    "Customer": customer,
+    "GSTIN": gstin,
+    "Subtotal": subtotal,
+    "Tax": tax,
+    "Total": total
+}
 
-print("Invoice Number:", invoice_number)
-print("Invoice Date:", invoice_date)
-print("Vendor:", vendor)
-print("Customer:", customer)
-print("Subtotal:", subtotal)
-print("Tax:", tax)
-print("Total:", total)
-print("GSTIN:", gstin)
+print(invoice)
