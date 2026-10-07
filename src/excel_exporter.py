@@ -29,18 +29,46 @@ def export_invoices_to_excel(invoices, output_path):
             column_number = dataframe.columns.get_loc(column_name) + 1
 
             for row in range(2, worksheet.max_row + 1):
-                worksheet.cell(row=row, column=column_number).number_format = '#,##0.00'
+                worksheet.cell(
+                    row=row,
+                    column=column_number
+                ).number_format = '#,##0.00'
+
+    # Minimum widths for invoice columns
+    minimum_widths = {
+        "Invoice Number": 18,
+        "Invoice Date": 20,
+        "Vendor": 28,
+        "Customer": 24,
+        "GSTIN": 18,
+        "Subtotal": 14,
+        "Tax": 14,
+        "Total": 14
+    }
 
     # Adjust column widths
     for column in worksheet.columns:
-        max_length = 0
         column_letter = get_column_letter(column[0].column)
+        column_name = worksheet.cell(
+            row=1,
+            column=column[0].column
+        ).value
+
+        max_length = 0
 
         for cell in column:
             if cell.value is not None:
-                max_length = max(max_length, len(str(cell.value)))
+                max_length = max(
+                    max_length,
+                    len(str(cell.value))
+                )
 
-        worksheet.column_dimensions[column_letter].width = max_length + 2
+        width = max(
+            max_length + 3,
+            minimum_widths.get(column_name, 12)
+        )
+
+        worksheet.column_dimensions[column_letter].width = width
 
     # Freeze header row
     worksheet.freeze_panes = "A2"
