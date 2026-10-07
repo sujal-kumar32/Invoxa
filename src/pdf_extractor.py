@@ -23,52 +23,83 @@ def extract_text_from_pdf(pdf_path):
 
 
 def extract_invoice_number(text):
-    pattern = r"Invoice Number\s+([A-Za-z0-9-]+)"
+    patterns = [
+        r"Invoice Number\s*[:#]?\s*([A-Za-z0-9-]+)",
+        r"Invoice No\.?\s*[:#]?\s*([A-Za-z0-9-]+)",
+        r"Invoice #\s*([A-Za-z0-9-]+)",
+        r"^\#\s*([A-Za-z0-9-]+)$"
+    ]
 
-    match = re.search(pattern, text, re.IGNORECASE)
+    for pattern in patterns:
+        match = re.search(pattern, text, re.IGNORECASE | re.MULTILINE)
 
-    if match:
-        return match.group(1)
+        if match:
+            return match.group(1)
 
     return None
 
+
 def extract_invoice_date(text):
-    pattern = r"Invoice Date\s+([A-Za-z]+\s+\d{1,2},\s+\d{4})"
+    patterns = [
+        r"Invoice Date\s*[:#]?\s*([A-Za-z]+\s+\d{1,2},\s+\d{4})",
+        r"Date\s*:\s*([A-Za-z]+\s+\d{1,2}\s+\d{4})",
+        r"Date\s*:\s*([A-Za-z]+\s+\d{1,2},\s+\d{4})"
+    ]
 
-    match = re.search(pattern, text, re.IGNORECASE)
+    for pattern in patterns:
+        match = re.search(pattern, text, re.IGNORECASE)
 
-    if match:
-        return match.group(1)
+        if match:
+            return match.group(1)
 
     return None
 
 def extract_vendor(text):
-    pattern = r"From:\s*\n(.+?)\s+Order Number"
+    patterns = [
+        r"^(.+?)\s+INVOICE$",
+        r"From:\s*\n(.+?)\s+Order Number"
+    ]
 
-    match = re.search(pattern, text, re.IGNORECASE)
+    for pattern in patterns:
+        match = re.search(pattern, text, re.IGNORECASE | re.MULTILINE)
+        if match:
+            return match.group(1).strip()
 
-    if match:
-        return match.group(1).strip()
+    return None
+
+
+def extract_customer(pdf_path):
+    with pdfplumber.open(pdf_path) as pdf:
+        page = pdf.pages[0]
+        words = page.extract_words()
+
+    customer_words = []
+
+    for word in words:
+        if 135 <= word["top"] <= 155 and word["x0"] < 150:
+            customer_words.append(word["text"])
+
+    if customer_words:
+        return " ".join(customer_words)
 
     return None
 
-def extract_customer(text):
-    pattern = r"To:\s*\n([^\n]+)"
-
-    match = re.search(pattern, text, re.IGNORECASE)
-
-    if match:
-        return match.group(1).strip()
-
-    return None
 
 def extract_amount(text, label):
-    pattern = rf"^{label}\s+\$?([\d,]+\.\d{{2}})$"
+    patterns = [
+        rf"{label}\s*:\s*\$?([\d,]+\.\d{{2}})",
+        rf"{label}\s+\$?([\d,]+\.\d{{2}})"
+    ]
 
-    match = re.search(pattern, text, re.IGNORECASE | re.MULTILINE)
+    for pattern in patterns:
+        match = re.search(
+            pattern,
+            text,
+            re.IGNORECASE
+        )
 
-    if match:
-        return Decimal(match.group(1).replace(",", ""))
+        if match:
+            return Decimal(match.group(1).replace(",", ""))
 
     return None
 
@@ -88,10 +119,10 @@ def extract_invoice(pdf_path):
     invoice_number = extract_invoice_number(text)
     invoice_date = extract_invoice_date(text)
     vendor = extract_vendor(text)
-    customer = extract_customer(text)
+    customer = extract_customer(pdf_path)
     gstin = extract_gstin(text)
 
-    subtotal = extract_amount(text, "Sub Total")
+    subtotal = extract_amount(text, "Subtotal")
     tax = extract_amount(text, "Tax")
     total = extract_amount(text, "Total")
 

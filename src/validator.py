@@ -4,7 +4,6 @@ REQUIRED_FIELDS = [
     "Vendor",
     "Customer",
     "Subtotal",
-    "Tax",
     "Total"
 ]
 
